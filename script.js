@@ -267,7 +267,7 @@ function createEvent(event) {
     mapLink.href = event.link;
     mapLink.target = '_blank';
     mapLink.rel = 'noreferrer';
-    mapLink.textContent = '查看地圖 / 預約';
+    mapLink.textContent = '查看地圖';
     linkRow.append(mapLink);
     details.append(linkRow);
   }
