@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>北海道雪國之旅行程</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Inter:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__overlay"></div>
+    <div class="hero__content">
+      <p class="eyebrow">Hokkaido Winter Escape</p>
+      <h1>北海道雪國 9 天自由行</h1>
+      <p class="lede">札幌、洞爺湖、留壽都、小樽，一次收集冰祭、滑雪、溫泉與港都風情。</p>
+      <div class="hero__meta">
+        <span class="pill">2/7 (六) — 2/15 (日)</span>
+        <span class="pill pill--ghost">自駕＋電車移動 · 三人旅</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="controls">
+      <div>
+        <h2>每日精華</h2>
+        <p class="muted">點擊卡片可展開／收合行程。輸入關鍵字快速尋找，例如「溫泉」或「滑雪」。</p>
+      </div>
+      <div class="controls__actions">
+        <label class="search">
+          <span class="search__icon">🔍</span>
+          <input id="filterInput" type="text" placeholder="搜尋活動或地點" />
+        </label>
+        <button id="resetFilter" class="ghost-btn" type="button">清除搜尋</button>
+      </div>
+    </section>
+
+    <section id="itinerary" class="itinerary"></section>
+
+    <section class="tips">
+      <div>
+        <h3>旅人小提醒</h3>
+        <ul>
+          <li>札幌「薄野冰祭」夜間點燈至 23:00，記得穿著防滑鞋與保暖小物。</li>
+          <li>洞爺湖冬季煙火大會每日 20:30，湖畔或房內都能觀賞，提前 5 分鐘到場卡位。</li>
+          <li>留壽都滑雪 9:00 開放，若需租借裝備請預留排隊時間，夜滑 16:00 後開始。</li>
+          <li>小樽「雪燈之路」點燈 17:00~21:00，安排傍晚漫步最有氣氛。</li>
+          <li>自駕山路請注意路面結冰，留壽都往返洞爺湖約 30 分鐘，視雪況放寬 10~15 分鐘。</li>
+        </ul>
+      </div>
+      <div class="tip-card">
+        <p class="eyebrow">交通小抄</p>
+        <h4>機場快捷 &amp; 租車筆記</h4>
+        <p>新千歲機場 ⇄ 札幌車站約 37 分鐘。Budget 札幌店距離大通公園約 10 分鐘地鐵，還車同地點。</p>
+        <div class="tip-links">
+          <a class="chip" href="https://maps.app.goo.gl/UzQ1HyrQ7j9Xii7K6" target="_blank" rel="noreferrer">札幌車站地圖</a>
+          <a class="chip" href="https://maps.app.goo.gl/yB1XMNKKAtppm5GM9" target="_blank" rel="noreferrer">Budget 租車點</a>
+          <a class="chip" href="https://maps.app.goo.gl/J3dYURPZupBSL3S56" target="_blank" rel="noreferrer">新千歲機場</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Keep warm, keep curious — 北海道雪季美好收集</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
