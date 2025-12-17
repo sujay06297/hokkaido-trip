@@ -297,7 +297,7 @@ function renderItinerary(keyword = '') {
 
     const card = document.createElement('article');
     card.className = 'day-card';
-    card.dataset.open = 'true';
+    card.dataset.open = 'false';
 
     const header = document.createElement('div');
     header.className = 'day-header';
@@ -338,12 +338,13 @@ function renderItinerary(keyword = '') {
 
     const list = document.createElement('ul');
     list.className = 'event-list';
+    list.style.display = 'none'; // 2. 預設隱藏列表
     filteredEvents.forEach((event) => list.append(createEvent(event)));
 
     const toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.className = 'ghost-btn';
-    toggle.textContent = '收合';
+    toggle.textContent = '展開'; // 3. 文字改為展開
     toggle.addEventListener('click', (e) => {
       e.stopPropagation();
       const isOpen = card.dataset.open === 'true';
