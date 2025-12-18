@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>北海道口袋清單</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Inter:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="nav-inner">
+      <a class="brand" href="index.html">Hokkaido Trip</a>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">行程</a>
+        <a class="nav-link" href="places.html" aria-current="page">口袋清單</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero hero--places">
+    <div class="hero__overlay"></div>
+    <div class="hero__content">
+      <p class="eyebrow">Pocket List</p>
+      <h1>北海道私房地圖</h1>
+      <p class="lede">餐廳、景點、逛街清單一次收好，旅途中隨時點開導航。</p>
+      <div class="hero__meta">
+        <span class="pill">小樽 · 札幌 · 洞爺湖 · 留壽都</span>
+        <span class="pill pill--ghost">全部 24 個口袋名單</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="controls">
+      <div>
+        <h2>快速搜尋</h2>
+        <p class="muted">輸入類型、城市或關鍵字，篩出餐廳與景點。</p>
+      </div>
+      <div class="controls__actions">
+        <label class="select">
+          <span class="muted">類型</span>
+          <select id="typeFilter">
+            <option value="全部">全部</option>
+            <option value="正餐">正餐</option>
+            <option value="甜點">甜點</option>
+            <option value="景點">景點</option>
+            <option value="逛街">逛街</option>
+          </select>
+        </label>
+        <label class="search">
+          <span class="search__icon">🔍</span>
+          <input id="placeFilter" type="text" placeholder="想找什麼？例如：壽司 / 小樽 / 景點" />
+        </label>
+        <a class="ghost-btn" href="index.html">回到行程</a>
+      </div>
+    </section>
+
+    <section id="placesGrid" class="place-grid"></section>
+    <p id="emptyState" class="muted" style="display:none; text-align:center;">找不到符合的項目，試試其他關鍵字。</p>
+  </main>
+
+  <footer class="footer">
+    <p>旅途間隨時打開這頁，導航或臨時加點都方便。</p>
+  </footer>
+
+  <script src="places.js"></script>
+  <script>
+    const placesGrid = document.getElementById('placesGrid');
+    const placeFilter = document.getElementById('placeFilter');
+    const typeFilter = document.getElementById('typeFilter');
+    const emptyState = document.getElementById('emptyState');
+
+    const typeColors = {
+      '正餐': 'rgba(59, 130, 246, 0.12)',
+      '甜點': 'rgba(236, 72, 153, 0.12)',
+      '景點': 'rgba(52, 211, 153, 0.14)',
+      '逛街': 'rgba(251, 191, 36, 0.14)',
+    };
+
+    function createPlaceCard(place) {
+      const card = document.createElement('article');
+      card.className = 'place-card';
+
+      const header = document.createElement('div');
+      header.className = 'place-card__header';
+
+      const type = document.createElement('span');
+      type.className = 'pill place-type';
+      type.textContent = place.type;
+      type.style.background = typeColors[place.type] || 'rgba(148, 163, 184, 0.15)';
+      type.style.border = '1px solid rgba(148, 163, 184, 0.3)';
+      type.style.color = '#0f172a';
+
+      const city = document.createElement('span');
+      city.className = 'tag';
+      city.textContent = place.city;
+
+      header.append(type, city);
+
+      const title = document.createElement('h3');
+      title.className = 'place-title';
+      title.textContent = place.name;
+
+      const note = document.createElement('p');
+      note.className = 'place-note';
+      note.textContent = place.note || '—';
+
+      const actions = document.createElement('div');
+      actions.className = 'place-actions';
+
+      if (place.link) {
+        const mapLink = document.createElement('a');
+        mapLink.className = 'chip';
+        mapLink.href = place.link;
+        mapLink.target = '_blank';
+        mapLink.rel = 'noreferrer';
+        mapLink.textContent = 'Google 連結';
+        actions.append(mapLink);
+      } else {
+        const placeholder = document.createElement('span');
+        placeholder.className = 'muted';
+        placeholder.textContent = '暫無連結';
+        actions.append(placeholder);
+      }
+
+      card.append(header, title, note, actions);
+      return card;
+    }
+
+    function renderPlaces(keyword = '', type = '全部') {
+      placesGrid.innerHTML = '';
+      const normalized = keyword.trim().toLowerCase();
+      const typeValue = type || '全部';
+
+      const filtered = places.filter((p) => {
+        const matchesType = typeValue === '全部' ? true : p.type === typeValue;
+        const matchesKeyword = normalized
+          ? [p.type, p.name, p.city, p.note]
+              .filter(Boolean)
+              .some((field) => field.toLowerCase().includes(normalized))
+          : true;
+        return matchesType && matchesKeyword;
+      });
+
+      emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
+
+      filtered.forEach((place) => {
+        placesGrid.append(createPlaceCard(place));
+      });
+    }
+
+    renderPlaces();
+
+    placeFilter.addEventListener('input', (e) => renderPlaces(e.target.value, typeFilter.value));
+    typeFilter.addEventListener('change', (e) => renderPlaces(placeFilter.value, e.target.value));
+  </script>
+</body>
+</html>

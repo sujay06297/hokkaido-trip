@@ -21,6 +21,57 @@ body {
   line-height: 1.6;
 }
 
+/* --- Top Nav --- */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.12);
+}
+
+.nav-inner {
+  max-width: 1100px;
+  width: 90%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+.brand {
+  color: #e2e8f0;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-link {
+  color: #cbd5e1;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.nav-link[aria-current='page'] {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.nav-link:hover {
+  color: #fff;
+}
+
 /* --- Hero Section (解決重疊的關鍵) --- */
 .hero {
   position: relative;
@@ -37,6 +88,11 @@ body {
   position: absolute;
   inset: 0;
   background: linear-gradient(120deg, rgba(15, 23, 42, 0.85) 20%, rgba(14, 165, 233, 0.5));
+}
+
+.hero--places {
+  background: url('https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1400&q=80')
+    center/cover no-repeat;
 }
 
 .hero__content {
@@ -120,16 +176,18 @@ body {
   gap: 12px;
   align-items: center;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .search {
   display: flex;
   align-items: center;
-  padding: 12px 18px;
-  background: #f1f5f9;
+  padding: 10px 14px;
+  background: #f8fafc;
   border: 1px solid var(--border);
   border-radius: 14px;
-  min-width: 280px;
+  min-width: 240px;
+  flex: 1;
 }
 
 .search input {
@@ -139,6 +197,32 @@ body {
   width: 100%;
   font-size: 15px;
   margin-left: 10px;
+}
+
+.select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  min-width: 140px;
+  max-width: 200px;
+}
+
+.select .muted {
+  margin: 0;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.select select {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 14px;
+  background: #f8fafc;
 }
 
 /* --- Itinerary Cards --- */
@@ -175,6 +259,21 @@ body {
   border-radius: 999px;
   font-size: 13px;
   font-weight: 700;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #eef2ff;
+  color: #4338ca;
+  border-radius: 999px;
+  border: 1px solid #c7d2fe;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  width: fit-content;
 }
 
 .thumbnail {
@@ -245,12 +344,57 @@ body {
 
 .footer { text-align: center; padding: 60px; color: var(--muted); }
 
+/* --- Places Page --- */
+.place-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.place-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 10px;
+}
+
+.place-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.place-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.place-note {
+  margin: 0;
+  color: var(--muted);
+  min-height: 22px;
+}
+
+.place-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
 /* --- 響應式修正 --- */
 @media (max-width: 768px) {
+  .nav-inner { width: 94%; }
   .hero { padding: 60px 24px 80px; }
   .page { margin-top: -40px; width: 95%; }
   .controls { padding: 20px; }
   .controls__actions { width: 100%; }
-  .search { min-width: 100%; }
+  .search { min-width: 100%; flex: 1; }
+  .select { width: 100%; max-width: none; }
   .tips { grid-template-columns: 1fr; }
 }
