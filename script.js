@@ -16,7 +16,7 @@ const itinerary = [
         link: 'https://maps.app.goo.gl/UzQ1HyrQ7j9Xii7K6',
       },
       { time: '晚上', title: '入住 Airbnb', link: 'https://maps.app.goo.gl/imiJbVikRXywY5367' },
-      { time: '晚上', title: '晚餐', note: '就近覓食，品嚐札幌必吃湯咖哩或成吉思汗烤肉。' },
+      { time: '晚上', title: '晚餐', note: '就近覓食。' },
       {
         time: '晚上',
         title: '薄野冰祭夜晚點燈',
