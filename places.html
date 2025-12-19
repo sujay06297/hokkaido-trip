@@ -50,6 +50,12 @@
             <option value="逛街">逛街</option>
           </select>
         </label>
+        <label class="select">
+          <span class="muted">地點</span>
+          <select id="cityFilter">
+            <option value="全部">全部</option>
+          </select>
+        </label>
         <label class="search">
           <span class="search__icon">🔍</span>
           <input id="placeFilter" type="text" placeholder="想找什麼？例如：壽司 / 小樽 / 景點" />
@@ -71,6 +77,7 @@
     const placesGrid = document.getElementById('placesGrid');
     const placeFilter = document.getElementById('placeFilter');
     const typeFilter = document.getElementById('typeFilter');
+    const cityFilter = document.getElementById('cityFilter');
     const emptyState = document.getElementById('emptyState');
 
     const typeColors = {
@@ -103,6 +110,9 @@
       const title = document.createElement('h3');
       title.className = 'place-title';
       title.textContent = place.name;
+      title.setAttribute('role', 'button');
+      title.tabIndex = 0;
+      title.title = '點擊複製店家名稱';
 
       const note = document.createElement('p');
       note.className = 'place-note';
@@ -126,23 +136,50 @@
         actions.append(placeholder);
       }
 
-      card.append(header, title, note, actions);
+      const copyStatus = document.createElement('span');
+      copyStatus.className = 'muted';
+      copyStatus.style.display = 'none';
+      copyStatus.textContent = '已複製店名';
+
+      async function copyName() {
+        try {
+          await navigator.clipboard.writeText(place.name);
+          copyStatus.style.display = 'block';
+          setTimeout(() => {
+            copyStatus.style.display = 'none';
+          }, 1500);
+        } catch (err) {
+          console.error('Clipboard copy failed', err);
+        }
+      }
+
+      title.addEventListener('click', copyName);
+      title.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          copyName();
+        }
+      });
+
+      card.append(header, title, note, actions, copyStatus);
       return card;
     }
 
-    function renderPlaces(keyword = '', type = '全部') {
+    function renderPlaces(keyword = '', type = '全部', city = '全部') {
       placesGrid.innerHTML = '';
       const normalized = keyword.trim().toLowerCase();
       const typeValue = type || '全部';
+      const cityValue = city || '全部';
 
       const filtered = places.filter((p) => {
         const matchesType = typeValue === '全部' ? true : p.type === typeValue;
+        const matchesCity = cityValue === '全部' ? true : p.city === cityValue;
         const matchesKeyword = normalized
           ? [p.type, p.name, p.city, p.note]
               .filter(Boolean)
               .some((field) => field.toLowerCase().includes(normalized))
           : true;
-        return matchesType && matchesKeyword;
+        return matchesType && matchesCity && matchesKeyword;
       });
 
       emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
@@ -152,10 +189,37 @@
       });
     }
 
+    function populateCityOptions() {
+      const cities = Array.from(new Set(places.map((p) => p.city))).sort((a, b) =>
+        a.localeCompare(b, 'zh-Hant')
+      );
+      const fragment = document.createDocumentFragment();
+      const allOption = document.createElement('option');
+      allOption.value = '全部';
+      allOption.textContent = '全部';
+      fragment.append(allOption);
+      cities.forEach((city) => {
+        const option = document.createElement('option');
+        option.value = city;
+        option.textContent = city;
+        fragment.append(option);
+      });
+      cityFilter.innerHTML = '';
+      cityFilter.append(fragment);
+    }
+
+    populateCityOptions();
     renderPlaces();
 
-    placeFilter.addEventListener('input', (e) => renderPlaces(e.target.value, typeFilter.value));
-    typeFilter.addEventListener('change', (e) => renderPlaces(placeFilter.value, e.target.value));
+    placeFilter.addEventListener('input', (e) =>
+      renderPlaces(e.target.value, typeFilter.value, cityFilter.value)
+    );
+    typeFilter.addEventListener('change', (e) =>
+      renderPlaces(placeFilter.value, e.target.value, cityFilter.value)
+    );
+    cityFilter.addEventListener('change', (e) =>
+      renderPlaces(placeFilter.value, typeFilter.value, e.target.value)
+    );
   </script>
 </body>
 </html>
