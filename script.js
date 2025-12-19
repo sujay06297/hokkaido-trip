@@ -1,4 +1,4 @@
-const itinerary = [
+const fallbackItinerary = [
   {
     date: '2/7 (六)',
     title: '抵達北海道・觀賞薄野冰季',
@@ -236,6 +236,86 @@ const itinerary = [
 const itineraryContainer = document.getElementById('itinerary');
 const filterInput = document.getElementById('filterInput');
 const resetFilter = document.getElementById('resetFilter');
+let itinerary = fallbackItinerary.slice();
+const SHEET_ID = '113xiJaMMBxUC7aN0flEpWMQ9R4-STZuuaOFB6_Sk33k';
+const ITINERARY_GID = '650658766';
+const fallbackHeroImages = [
+  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=900&q=80',
+  'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=900&q=80',
+  'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80',
+  'https://images.unsplash.com/photo-1541625602330-2277a4c46182?auto=format&fit=crop&w=900&q=80',
+];
+
+function fetchGvizRows(gid) {
+  return new Promise((resolve, reject) => {
+    const resolverQueue = (window.__gvizResolvers = window.__gvizResolvers || []);
+    if (!window.google) window.google = {};
+    if (!window.google.visualization) window.google.visualization = {};
+    if (!window.google.visualization.Query) window.google.visualization.Query = {};
+    if (!window.google.visualization.Query.setResponse) {
+      window.google.visualization.Query.setResponse = (response) => {
+        const next = resolverQueue.shift();
+        if (next) next(response);
+      };
+    }
+
+    const script = document.createElement('script');
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${gid}&tqx=out:json`;
+
+    resolverQueue.push((response) => {
+      try {
+        const rows = response?.table?.rows || [];
+        resolve(rows);
+      } catch (err) {
+        reject(err);
+      } finally {
+        script.remove();
+      }
+    });
+
+    script.onerror = () => {
+      script.remove();
+      resolverQueue.shift();
+      reject(new Error('gviz JSONP 載入失敗'));
+    };
+
+    script.src = url;
+    document.body.appendChild(script);
+  });
+}
+
+function buildItineraryFromRows(rows) {
+  const days = [];
+  let currentDay = null;
+  rows.forEach((row) => {
+    const cells = row?.c || [];
+    const time = cells[0]?.v ? String(cells[0].v).trim() : '';
+    const activity = cells[1]?.v ? String(cells[1].v).trim() : '';
+    const note = cells[2]?.v ? String(cells[2].v).trim() : '';
+    const link = cells[3]?.v ? String(cells[3].v).trim() : '';
+    if (!time && !activity) return;
+    if (/^\d{1,2}\/\d{1,2}/.test(time)) {
+      currentDay = {
+        date: time,
+        title: activity || time,
+        location: activity || '',
+        heroImage: fallbackHeroImages[days.length % fallbackHeroImages.length],
+        tag: '行程',
+        events: [],
+      };
+      days.push(currentDay);
+      return;
+    }
+    if (!currentDay) return;
+    currentDay.events.push({
+      time: time || '',
+      title: activity || '',
+      note: note || '',
+      link: link || '',
+    });
+  });
+  return days;
+}
 
 function createEvent(event) {
   const li = document.createElement('li');
@@ -363,7 +443,23 @@ function renderItinerary(keyword = '') {
   });
 }
 
-renderItinerary();
+async function loadItinerary() {
+  try {
+    const rows = await fetchGvizRows(ITINERARY_GID);
+    const parsed = buildItineraryFromRows(rows);
+    if (parsed.length) {
+      itinerary = parsed;
+    } else {
+      itinerary = fallbackItinerary.slice();
+    }
+  } catch (err) {
+    console.error('取得行程資料失敗，改用備援資料', err);
+    itinerary = fallbackItinerary.slice();
+  }
+  renderItinerary(filterInput.value);
+}
+
+loadItinerary();
 
 filterInput.addEventListener('input', (e) => {
   renderItinerary(e.target.value);

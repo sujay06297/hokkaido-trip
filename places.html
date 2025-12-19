@@ -208,8 +208,13 @@
       cityFilter.append(fragment);
     }
 
-    populateCityOptions();
-    renderPlaces();
+    async function initPlaces() {
+      await loadPlaces();
+      populateCityOptions();
+      renderPlaces();
+    }
+
+    initPlaces();
 
     placeFilter.addEventListener('input', (e) =>
       renderPlaces(e.target.value, typeFilter.value, cityFilter.value)
