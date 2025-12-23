@@ -260,7 +260,7 @@ function fetchGvizRows(gid) {
     }
 
     const script = document.createElement('script');
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${gid}&tqx=out:json`;
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${gid}&headers=1&tqx=out:json`;
 
     resolverQueue.push((response) => {
       try {
@@ -289,15 +289,29 @@ function buildItineraryFromRows(rows) {
   let currentDay = null;
   rows.forEach((row) => {
     const cells = row?.c || [];
-    const time = cells[0]?.v ? String(cells[0].v).trim() : '';
+    const timeCell = cells[0] || {};
+    const rawTime = timeCell.v;
+    const timeText = timeCell.f
+      ? String(timeCell.f).trim()
+      : rawTime instanceof Date
+      ? rawTime.getFullYear() > 2000
+        ? `${rawTime.getMonth() + 1}/${rawTime.getDate()}`
+        : `${String(rawTime.getHours()).padStart(2, '0')}:${String(
+            rawTime.getMinutes()
+          ).padStart(2, '0')}`
+      : String(rawTime ?? '').trim();
     const activity = cells[1]?.v ? String(cells[1].v).trim() : '';
     const note = cells[2]?.v ? String(cells[2].v).trim() : '';
     const link = cells[3]?.v ? String(cells[3].v).trim() : '';
-    if (!time && !activity) return;
-    if (/^\d{1,2}\/\d{1,2}/.test(time)) {
+    if (!timeText && !activity) return;
+    const isDateRow =
+      (timeText && /^\d{1,2}\/\d{1,2}/.test(timeText)) ||
+      (rawTime instanceof Date && rawTime.getFullYear() > 2000);
+    if (isDateRow) {
+      const dateLabel = timeText;
       currentDay = {
-        date: time,
-        title: activity || time,
+        date: dateLabel,
+        title: activity || dateLabel,
         location: activity || '',
         heroImage: fallbackHeroImages[days.length % fallbackHeroImages.length],
         tag: '行程',
@@ -308,7 +322,7 @@ function buildItineraryFromRows(rows) {
     }
     if (!currentDay) return;
     currentDay.events.push({
-      time: time || '',
+      time: timeText || '',
       title: activity || '',
       note: note || '',
       link: link || '',

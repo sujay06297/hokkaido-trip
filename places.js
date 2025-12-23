@@ -43,7 +43,7 @@ function fetchGvizRows(gid) {
     }
 
     const script = document.createElement('script');
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${gid}&tqx=out:json`;
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${gid}&headers=1&tqx=out:json`;
 
     resolverQueue.push((response) => {
       try {
