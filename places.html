@@ -136,32 +136,49 @@
         actions.append(placeholder);
       }
 
-      const copyStatus = document.createElement('span');
-      copyStatus.className = 'muted';
-      copyStatus.style.display = 'none';
-      copyStatus.textContent = '已複製店名';
-
-      async function copyName() {
-        try {
-          await navigator.clipboard.writeText(place.name);
-          copyStatus.style.display = 'block';
-          setTimeout(() => {
-            copyStatus.style.display = 'none';
-          }, 1500);
-        } catch (err) {
-          console.error('Clipboard copy failed', err);
-        }
+      function showToast(message) {
+        const existing = document.querySelector('.toast-message');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.textContent = message;
+        toast.style.position = 'fixed';
+        toast.style.left = '50%';
+        toast.style.bottom = '24px';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.background = 'rgba(15, 23, 42, 0.92)';
+        toast.style.color = '#fff';
+        toast.style.padding = '10px 16px';
+        toast.style.borderRadius = '999px';
+        toast.style.fontSize = '14px';
+        toast.style.zIndex = '9999';
+        toast.style.boxShadow = '0 10px 30px rgba(15, 23, 42, 0.25)';
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          toast.remove();
+        }, 3000);
       }
 
-      title.addEventListener('click', copyName);
+      async function showName() {
+        let message = '已複製：' + place.name;
+        try {
+          await navigator.clipboard.writeText(place.name);
+        } catch (err) {
+          message = '無法複製：' + place.name;
+          console.error('Clipboard copy failed', err);
+        }
+        showToast(message);
+      }
+
+      title.addEventListener('click', showName);
       title.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          copyName();
+          showName();
         }
       });
 
-      card.append(header, title, note, actions, copyStatus);
+      card.append(header, title, note, actions);
       return card;
     }
 
