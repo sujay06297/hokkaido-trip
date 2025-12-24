@@ -295,6 +295,11 @@ body {
   display: grid;
   gap: 12px;
   border-top: 1px solid var(--border);
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.35s ease, margin-top 0.35s ease,
+    padding-top 0.35s ease, border-top-color 0.35s ease;
 }
 
 .event {

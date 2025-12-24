@@ -141,6 +141,36 @@ function matchesKeyword(text = '', keyword) {
   return text.toLowerCase().includes(keyword);
 }
 
+function setEventListOpen(list, shouldOpen) {
+  const spacing = '24px';
+  if (shouldOpen) {
+    list.style.marginTop = spacing;
+    list.style.paddingTop = spacing;
+    list.style.borderTopColor = 'var(--border)';
+    list.style.opacity = '1';
+    const fullHeight = list.scrollHeight;
+    list.style.maxHeight = `${fullHeight}px`;
+    const onEnd = (event) => {
+      if (event.propertyName !== 'max-height') return;
+      if (list.dataset.open === 'true') {
+        list.style.maxHeight = 'none';
+      }
+      list.removeEventListener('transitionend', onEnd);
+    };
+    list.addEventListener('transitionend', onEnd);
+    return;
+  }
+
+  const fullHeight = list.scrollHeight;
+  list.style.maxHeight = `${fullHeight}px`;
+  list.getBoundingClientRect();
+  list.style.maxHeight = '0px';
+  list.style.opacity = '0';
+  list.style.marginTop = '0';
+  list.style.paddingTop = '0';
+  list.style.borderTopColor = 'transparent';
+}
+
 function renderItinerary(keyword = '') {
   itineraryContainer.innerHTML = '';
   const normalized = keyword.trim().toLowerCase();
@@ -211,8 +241,9 @@ function renderItinerary(keyword = '') {
 
     const list = document.createElement('ul');
     list.className = 'event-list';
-    list.style.display = 'none'; // 2. 預設收合列表
     filteredEvents.forEach((event) => list.append(createEvent(event)));
+    list.dataset.open = 'false';
+    setEventListOpen(list, false);
 
     const toggle = document.createElement('button');
     toggle.type = 'button';
@@ -222,7 +253,8 @@ function renderItinerary(keyword = '') {
       e.stopPropagation();
       const isOpen = card.dataset.open === 'true';
       card.dataset.open = (!isOpen).toString();
-      list.style.display = isOpen ? 'none' : 'grid';
+      list.dataset.open = (!isOpen).toString();
+      setEventListOpen(list, !isOpen);
       toggle.textContent = isOpen ? '展開' : '收合';
     });
 
